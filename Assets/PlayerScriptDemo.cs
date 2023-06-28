@@ -7,19 +7,21 @@ public class PlayerScriptDemo : MonoBehaviour
     public HealthBarScript healthBar;
     public ExperienceScript experienceBar;
     public AmmoScript ammoBar;
+    public PlayerUIScript playerUI;
 
-    public float MaxHealth;
+    public float maxHealth;
     public float health;
     public float maxExperience;
     public float experience;
     public float maxAmmo;
     public float ammo;
     
+    
     // Start is called before the first frame update
     void Start()
     {
-        health = MaxHealth;
-        healthBar.SetHealth(MaxHealth);
+        health = maxHealth;
+        healthBar.SetHealth(maxHealth);
 
         experience = 0;
         experienceBar.SetMaxExperience(maxExperience);
@@ -42,6 +44,7 @@ public class PlayerScriptDemo : MonoBehaviour
         {
             health = health - 20;
             healthBar.SetHealth(health);
+            playerUI.createPopUp(transform.position, 20);
         }
     }
 
@@ -62,4 +65,6 @@ public class PlayerScriptDemo : MonoBehaviour
            ammoBar.SetAmmo(ammo);
         }
     }
+
+   
 }
