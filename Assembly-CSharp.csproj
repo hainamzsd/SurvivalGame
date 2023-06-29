@@ -98,6 +98,15 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TeleType.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexZoom.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
+    <Compile Include="Assets\PlayerUIScript.cs" />
+    <Compile Include="Assets\GeneralUIScript.cs" />
+    <Compile Include="Assets\DamagePopUpScript.cs" />
+    <Compile Include="Assets\EnemyUIScript.cs" />
+    <Compile Include="Assets\PlayerScriptDemo.cs" />
+    <Compile Include="Assets\AmmoScript.cs" />
+    <Compile Include="Assets\HealthBarScript.cs" />
+    <Compile Include="Assets\ExperienceScript.cs" />
+    <Compile Include="Assets\EnemyScript.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
