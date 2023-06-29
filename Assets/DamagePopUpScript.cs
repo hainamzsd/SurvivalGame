@@ -10,9 +10,27 @@ public class DamagePopUpScript : MonoBehaviour
     private Color currentColor;
     private float disappearingSpeed;
 
-    public void SetupText(float damage, float disappearingSpeed)
+    public void SetupText(string text, float disappearingSpeed, int type)
     {
-        textMeshPro.SetText(damage.ToString());
+        switch (type)
+        {
+            case 1: 
+                textMeshPro.color = Color.green;
+                break;
+            case 2:
+                textMeshPro.color = Color.red;
+                break;
+            case 3:
+                textMeshPro.color = Color.yellow;
+                break;
+            case 4:
+                textMeshPro.color = Color.cyan;
+                break;
+            case 5:
+                textMeshPro.color = Color.white;
+                break;
+        }
+        textMeshPro.SetText(text);
         currentColor = textMeshPro.color;
         this.disappearingSpeed = disappearingSpeed;
     }

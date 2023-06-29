@@ -6,14 +6,20 @@ using UnityEngine.UI;
 public class AmmoScript : MonoBehaviour
 {
     public Slider slider;
-    public void SetMaxAmmo(float ammo)
+    public Text ammoDisplayText;
+    int maxClip;
+    public void SetMaxClip(int ammo)
     {
-        slider.maxValue = ammo;
+        maxClip = ammo;
+        slider.maxValue = maxClip;
         slider.value = ammo;
+        
+        ammoDisplayText.text = ammo + "/" + maxClip;
     }
 
-    public void SetAmmo(float ammo)
+    public void SetAmmo(int ammo)
     {
         slider.value = ammo;
+        ammoDisplayText.text = ammo + "/" + maxClip;
     }
 }
