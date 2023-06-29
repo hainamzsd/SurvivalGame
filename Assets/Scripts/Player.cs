@@ -6,6 +6,13 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
 
+    //UI
+    public ExperienceScript experienceBar;
+    public AmmoScript ammoBar;
+    public GeneralUIScript GeneralUI;
+    public PlayerUIScript playerUI;
+
+
     //movement
     [SerializeField]
     private FixedJoystick _joystick;
@@ -15,9 +22,11 @@ public class Player : MonoBehaviour
     private float _moveSpeed;
 
     //health
-    public int maxHealth = 100;
-    public int currentHealth;
-    public Slider healthBar;
+    [SerializeField]
+    public HealthBarScript healthBar;
+    public float maxHealth = 100;
+    public float health;
+
 
     //attack
     public Transform meleeWeapon;
@@ -28,8 +37,16 @@ public class Player : MonoBehaviour
     private Quaternion initialRotation;
 
     //level
+    public int currentLevel = 1;
+    const int XP_INCREMENT_PER_LEVEL = 100;
     public int currentExp;
     public int maxExp;
+
+    //ammo
+    public int remainingAmmo;
+    public int maxClip;
+    public int currentAmmo;
+    public float reloadTime;
 
 
 
@@ -38,15 +55,15 @@ public class Player : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         //health
-        currentHealth = maxHealth;
-        healthBar.maxValue = maxHealth;
-        healthBar.value = currentHealth;
+        health = maxHealth;
+        healthBar.SetMaxHealth(maxHealth);
         //attack
         initialRotation = meleeWeapon.rotation;
 
         //level
-        currentExp = 0;
         maxExp = GetRequiredExpForLevel(1);
+        experienceBar.SetMaxExperience(maxExp);
+        currentExp = 0;
     }
 
     // Update is called once per frame
@@ -54,7 +71,11 @@ public class Player : MonoBehaviour
     {
         //movement
         Movement();
-        
+        takeDamage();
+        healing();
+        shoot();
+        GainExp(20);
+        reload();
     }
 
     void Movement()
@@ -66,11 +87,11 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(int damageAmount)
     {
-        currentHealth -= damageAmount;
-        currentHealth = Mathf.Max(currentHealth, 0); // Ensure health doesn't go below zero
-        healthBar.value = currentHealth;
+        health -= damageAmount;
+        health = Mathf.Max(health, 0); // Ensure health doesn't go below zero
+        //healthBar.value = health;
 
-        if (currentHealth <= 0)
+        if (health <= 0)
         {
             
         }
@@ -120,28 +141,100 @@ public class Player : MonoBehaviour
     }
 
 
-    //level
+    //leveling
     public int GetRequiredExpForLevel(int level)
     {
-        // Adjust these parameters to customize the curve
-        float baseExp = 100f;   // Base experience points required for level 1
-        float expMultiplier = 1.5f;  // Experience points multiplier for each level
-
-        // Calculate the required experience points for the given level
-        int requiredExp = Mathf.RoundToInt(baseExp * Mathf.Pow(expMultiplier, level - 1));
-        return requiredExp;
+        return XP_INCREMENT_PER_LEVEL * level * (level + 1) / 2;
     }
 
     private void LevelUp()
     {
-        int currentLevel = (currentExp / maxExp) + 1;
         Debug.Log("Level Up! Current Level: " + currentLevel);
 
         int requiredExpForNextLevel = GetRequiredExpForLevel(currentLevel + 1);
         maxExp = requiredExpForNextLevel;
-
-        currentExp = currentExp % maxExp;
+        currentExp = 0;
     }
 
+    public void GainExp(int expAmount)
+    {
+        if (Input.GetKeyDown(KeyCode.E)) {
+            currentExp = currentExp + 20;
+            experienceBar.SetExperience(currentExp);
+
+            if (currentExp >= maxExp)
+        {
+            LevelUp();
+        }
+        }
+    }
+
+    
+    void takeDamage()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            health = health - 20;
+            healthBar.SetHealth(health);
+            GeneralUI.createPopUp(transform.position, "20", 2);
+        }
+    }
+
+    void healing()
+    {
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            health = health + 20;
+            healthBar.SetHealth(health);
+            GeneralUI.createPopUp(transform.position, "20", 1);
+        }
+    }
+
+  
+
+    void shoot()
+    {
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            currentAmmo = currentAmmo - 1;
+            ammoBar.SetAmmo(currentAmmo);
+        }
+    }
+
+    void reload()
+    {
+        //Press R
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            //No ammo
+            if (remainingAmmo <= 0)
+            {
+                GeneralUI.createPopUp(transform.position, "No Ammo Left", 5);
+            }
+            //Full clip
+            else if (currentAmmo == maxClip)
+            {
+                GeneralUI.createPopUp(transform.position, "Full Clip", 5);
+            }
+            //Reloading
+            else
+            {
+                playerUI.reloadActivation(reloadTime);
+                int reloadAmmo = maxClip - currentAmmo;
+                if (remainingAmmo >= reloadAmmo)
+                {
+                    currentAmmo = currentAmmo + reloadAmmo;
+                    remainingAmmo = remainingAmmo - reloadAmmo;
+
+                }
+                else
+                {
+                    currentAmmo = currentAmmo + remainingAmmo;
+                    remainingAmmo = 0;
+                }
+                ammoBar.SetAmmo(currentAmmo);
+            }
+        }
+    }
 
 }
