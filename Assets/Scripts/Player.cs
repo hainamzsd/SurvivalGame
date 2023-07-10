@@ -40,7 +40,7 @@ public class Player : MonoBehaviour
     //private Quaternion initialRotation;
 
     //level
-    public int currentLevel = 1;
+    public int currentLevel { get; set; } = 1;
     const int XP_INCREMENT_PER_LEVEL = 100;
     public int currentExp;
     public int maxExp;
@@ -91,7 +91,6 @@ public class Player : MonoBehaviour
         //movement
         Movement();
         healing();
-        GainExp(20);
         reload();
         ControlWeapon();
     }
@@ -184,14 +183,10 @@ public class Player : MonoBehaviour
 
     public void GainExp(int expAmount)
     {
-        if (Input.GetKeyDown(KeyCode.E)) {
-            currentExp = currentExp + 20;
             experienceBar.SetExperience(currentExp);
-
             if (currentExp >= maxExp)
         {
             LevelUp();
-        }
         }
     }
 

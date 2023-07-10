@@ -19,7 +19,7 @@ public class MenuLogicScript : MonoBehaviour
 
     public void PlayGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        SceneManager.LoadScene("UIDemo");
     }
 
     public void Quit()

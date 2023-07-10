@@ -63,8 +63,13 @@ public class EnemyScript : MonoBehaviour
 
     void die()
     {
-        if(currentHealth <= 0)
+        Player player = FindObjectOfType<Player>();
+        if (currentHealth <= 0)
         {
+            if(player != null)
+            {
+                player.GainExp(20);
+            }
             Destroy(this.gameObject);
         }
     }
