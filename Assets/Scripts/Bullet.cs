@@ -20,10 +20,11 @@ public class Bullet : MonoBehaviour
         transform.Translate(direction * speed * Time.deltaTime);
         
     }
-    private void ontriggerenter2d(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         // destroy the bullet when it collides with another object
-        if(other.tag != "Player" ||  other.tag != "Weapon" || other.tag != "Bullet") { }
-        Destroy(gameObject);
+        if(other.tag == "Enemy" || other.tag == "Obstacle") {
+            Destroy(gameObject);
+        }
     }
 }

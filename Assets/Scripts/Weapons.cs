@@ -7,6 +7,9 @@ public class Weapons : MonoBehaviour
     private Transform player;
     private Transform pivotPoint;
 
+    public int maxClip { get; set; } = 20;
+    public int currentAmmo { get; set; } = 20;
+
     private void Start()
     {
         pivotPoint = GameObject.FindGameObjectWithTag("WeaponPivot").transform;

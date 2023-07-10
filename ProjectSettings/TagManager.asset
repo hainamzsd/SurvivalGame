@@ -10,6 +10,7 @@ TagManager:
   - WeaponPivot
   - Weapon
   - Bullet
+  - Obstacle
   layers:
   - Default
   - TransparentFX

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.GraphicsBuffer;
 
 public class Player : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class Player : MonoBehaviour
     public AmmoScript ammoBar;
     public GeneralUIScript GeneralUI;
     public PlayerUIScript playerUI;
+    public SpriteRenderer spriteRenderer;
 
 
     //movement
@@ -31,11 +33,11 @@ public class Player : MonoBehaviour
 
     //attack
     //public Transform meleeWeapon;
-    public float rotationSpeed = 100f;
-    public float swingRadius = 2f;
-    public float attackDuration = 0.5f;
-    private bool isAttacking = false;
-    private Quaternion initialRotation;
+    //public float rotationSpeed = 100f;
+    //public float swingRadius = 2f;
+    //public float attackDuration = 0.5f;
+    //private bool isAttacking = false;
+    //private Quaternion initialRotation;
 
     //level
     public int currentLevel = 1;
@@ -64,9 +66,16 @@ public class Player : MonoBehaviour
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         //health
         health = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
+
+        //ammo
+        maxClip = 10;
+        currentAmmo = 10;
+        ammoBar.SetAmmo(currentAmmo);
+        ammoBar.SetMaxClip(maxClip);
         //attack
         //initialRotation = meleeWeapon.rotation;
 
@@ -85,14 +94,13 @@ public class Player : MonoBehaviour
         GainExp(20);
         reload();
         ControlWeapon();
-        Shoot(weaponRotation);
     }
 
     void Movement()
     {
-        move.x = _joystick.Horizontal;
-        move.y = _joystick.Vertical;
-        _rb.MovePosition(_rb.position + move * _moveSpeed * Time.deltaTime);
+            move.x = _joystick.Horizontal;
+            move.y = _joystick.Vertical;
+            _rb.MovePosition(_rb.position + move * _moveSpeed * Time.deltaTime);
     }
 
     public void TakeDamage(int damageAmount)
@@ -119,8 +127,10 @@ public class Player : MonoBehaviour
             weapon = collision.transform;
             weaponSprite = collision.GetComponent<SpriteRenderer>();
         }
+       
     }
 
+   
     //public void MeleeAttack()
     //{
     //    if (!isAttacking)
@@ -185,13 +195,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    
-    void takeDamage()
-    {
-            health = health - 20;
-            healthBar.SetHealth(health);
-            GeneralUI.createPopUp(transform.position, "20", 2);
-    }
+   
 
     void healing()
     {
@@ -268,15 +272,20 @@ public class Player : MonoBehaviour
     {
         // Flip the player horizontally
         isFacingRight = !isFacingRight;
-        transform.Rotate(0f, 180f, 0f);
-        if(weapon!= null)
+
+        spriteRenderer.flipY = !isFacingRight;
+
+
+        if (weapon!= null)
         {
+            
             weaponSprite.flipY = !isFacingRight;
         }
+
     }
 
 
-    private void AimWeapon()
+    public void AimWeapon()
     {
         if (weapon != null && _joystick != null)
         {
@@ -301,9 +310,11 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void Shoot(Quaternion weaponRotation)
+    public void Shoot()
     {
-        if (_joystick != null && weapon!=null && Input.GetKeyDown(KeyCode.Space))
+        
+
+        if (_joystick != null && weapon!=null)
         {
             Bullet bullet = Instantiate(bulletPrefab, weapon.position + new Vector3(0f,0f,0), Quaternion.identity);
             bullet.SetDirection(weaponRotation);
