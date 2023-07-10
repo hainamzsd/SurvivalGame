@@ -19,10 +19,9 @@ public class EnemyScript : MonoBehaviour
     private Rigidbody2D rb;
     private bool isAttacking = false;
     private bool isPlayerDetected = false;
-    private Vector3 initialPosition;
+    private Vector3 currentPosition;
 
 
-  
 
     // Start is called before the first frame update
     void Start()
@@ -31,13 +30,12 @@ public class EnemyScript : MonoBehaviour
         enemyUI.SetMaxHealth(maxHealth);
 
         rb = GetComponent<Rigidbody2D>();
-        initialPosition = transform.position;
     }
 
 
     private void Update()
     {
-
+        currentPosition = transform.position;
         if (!isAttacking)
         {
             if (!isPlayerDetected)
@@ -51,20 +49,16 @@ public class EnemyScript : MonoBehaviour
         }
 
 
-        takeDamage();
-        die();
     }
   
 
 
     void takeDamage()
     {
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
             currentHealth = currentHealth - 20;
             enemyUI.SetHealth(currentHealth);
             generalUI.createPopUp(transform.position, "20", 2);
-        }
+        die();
     }
 
     void die()
@@ -72,6 +66,14 @@ public class EnemyScript : MonoBehaviour
         if(currentHealth <= 0)
         {
             Destroy(this.gameObject);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == "Bullet")
+        {
+            takeDamage();
         }
     }
 
@@ -91,14 +93,14 @@ public class EnemyScript : MonoBehaviour
 
     private void ChasePlayer()
     {
-        Player player = FindObjectOfType<Player>(); 
+        Player player = FindObjectOfType<Player>();
         if (player != null)
         {
             Vector2 direction = player.transform.position - transform.position;
             rb.velocity = direction.normalized * chaseSpeed;
 
             // Check if the player is out of the detection radius
-            if (Vector2.Distance(initialPosition, player.transform.position) > detectionRadius)
+            if (Vector2.Distance(currentPosition, player.transform.position) > detectionRadius)
             {
                 isPlayerDetected = false;
                 rb.velocity = Vector2.zero;
@@ -113,15 +115,16 @@ public class EnemyScript : MonoBehaviour
 
     private void AttackPlayer()
     {
+        Player player = FindObjectOfType<Player>();
+
         // Perform the attack on the player
         // Replace this with your own code to damage the player or trigger any other attack-related actions
-        Debug.Log("Enemy attacks player!");
-
+        player.TakeDamage(20);
         isAttacking = true;
         rb.velocity = Vector2.zero;
-
+        
         // Wait for some time before allowing the enemy to attack again
-        float attackCooldown = 2f;
+        float attackCooldown = 1f;
         Invoke(nameof(ResetAttack), attackCooldown);
     }
 

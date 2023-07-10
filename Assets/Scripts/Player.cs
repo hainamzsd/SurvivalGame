@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +16,7 @@ public class Player : MonoBehaviour
 
     //movement
     [SerializeField]
-    private FixedJoystick _joystick;
+    public FixedJoystick _joystick;
     private Rigidbody2D _rb;
     private Vector2 move;
     [SerializeField]
@@ -29,7 +30,7 @@ public class Player : MonoBehaviour
 
 
     //attack
-    public Transform meleeWeapon;
+    //public Transform meleeWeapon;
     public float rotationSpeed = 100f;
     public float swingRadius = 2f;
     public float attackDuration = 0.5f;
@@ -48,6 +49,15 @@ public class Player : MonoBehaviour
     public int currentAmmo;
     public float reloadTime;
 
+    //weapon
+    public Transform weapon;
+    public SpriteRenderer weaponSprite;
+    private bool isFacingRight = true;
+
+    //shoot
+    [SerializeField]
+    public Bullet bulletPrefab;
+    private Quaternion weaponRotation;
 
 
     // Start is called before the first frame update
@@ -58,7 +68,7 @@ public class Player : MonoBehaviour
         health = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
         //attack
-        initialRotation = meleeWeapon.rotation;
+        //initialRotation = meleeWeapon.rotation;
 
         //level
         maxExp = GetRequiredExpForLevel(1);
@@ -71,11 +81,11 @@ public class Player : MonoBehaviour
     {
         //movement
         Movement();
-        takeDamage();
         healing();
-        shoot();
         GainExp(20);
         reload();
+        ControlWeapon();
+        Shoot(weaponRotation);
     }
 
     void Movement()
@@ -91,54 +101,60 @@ public class Player : MonoBehaviour
         health = Mathf.Max(health, 0); // Ensure health doesn't go below zero
         //healthBar.value = health;
 
+        healthBar.SetHealth(health);
+        GeneralUI.createPopUp(transform.position, damageAmount.ToString(), 2);
+
         if (health <= 0)
         {
-            
+            Destroy(this.gameObject);
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "Enemy")
+      
+        if (collision.CompareTag("Weapon"))
         {
-            TakeDamage(10);
+            // Assign the weapon to the weapon variable
+            weapon = collision.transform;
+            weaponSprite = collision.GetComponent<SpriteRenderer>();
         }
     }
 
-    public void MeleeAttack()
-    {
-        if (!isAttacking)
-        {
-            isAttacking = true;
-            StartCoroutine(SwingWeapon());
-            Invoke("DisableMeleeAttack", attackDuration);
-        }
-    }
+    //public void MeleeAttack()
+    //{
+    //    if (!isAttacking)
+    //    {
+    //        isAttacking = true;
+    //        StartCoroutine(SwingWeapon());
+    //        Invoke("DisableMeleeAttack", attackDuration);
+    //    }
+    //}
 
-    //attack melee
-    private IEnumerator SwingWeapon()
-    {
-        float elapsedTime = 0f;
-        Quaternion targetRotation = initialRotation;
+    ////attack melee
+    //private IEnumerator SwingWeapon()
+    //{
+    //    float elapsedTime = 0f;
+    //    Quaternion targetRotation = initialRotation;
 
-        while (elapsedTime < attackDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            float t = elapsedTime / attackDuration;
+    //    while (elapsedTime < attackDuration)
+    //    {
+    //        elapsedTime += Time.deltaTime;
+    //        float t = elapsedTime / attackDuration;
 
-            targetRotation *= Quaternion.Euler(0f, 0f, -rotationSpeed * Time.deltaTime);
-            meleeWeapon.rotation = Quaternion.Lerp(initialRotation, targetRotation, t);
+    //        targetRotation *= Quaternion.Euler(0f, 0f, -rotationSpeed * Time.deltaTime);
+    //        meleeWeapon.rotation = Quaternion.Lerp(initialRotation, targetRotation, t);
 
-            yield return null;
-        }
+    //        yield return null;
+    //    }
 
-        meleeWeapon.rotation = initialRotation;
-    }
+    //    meleeWeapon.rotation = initialRotation;
+    //}
 
-    private void DisableMeleeAttack()
-    {
-        isAttacking = false;
-    }
+    //private void DisableMeleeAttack()
+    //{
+    //    isAttacking = false;
+    //}
 
 
     //leveling
@@ -172,12 +188,9 @@ public class Player : MonoBehaviour
     
     void takeDamage()
     {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
             health = health - 20;
             healthBar.SetHealth(health);
             GeneralUI.createPopUp(transform.position, "20", 2);
-        }
     }
 
     void healing()
@@ -190,16 +203,7 @@ public class Player : MonoBehaviour
         }
     }
 
-  
-
-    void shoot()
-    {
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            currentAmmo = currentAmmo - 1;
-            ammoBar.SetAmmo(currentAmmo);
-        }
-    }
+   
 
     void reload()
     {
@@ -234,6 +238,77 @@ public class Player : MonoBehaviour
                 }
                 ammoBar.SetAmmo(currentAmmo);
             }
+        }
+    }
+
+    public void ControlWeapon()
+    {
+        if (_joystick != null)
+        {
+            // Get the horizontal input from the joystick
+            float horizontal = _joystick.Horizontal;
+
+            
+            // Flip the player and the weapon based on movement direction
+            if (horizontal > 0 && !isFacingRight)
+            {
+                Flip();
+            }
+            else if (horizontal < 0 && isFacingRight)
+            {
+                Flip();
+            }
+
+            // Aim the weapon based on joystick input
+            AimWeapon();
+        }
+    }
+
+    private void Flip()
+    {
+        // Flip the player horizontally
+        isFacingRight = !isFacingRight;
+        transform.Rotate(0f, 180f, 0f);
+        if(weapon!= null)
+        {
+            weaponSprite.flipY = !isFacingRight;
+        }
+    }
+
+
+    private void AimWeapon()
+    {
+        if (weapon != null && _joystick != null)
+        {
+            // Get the direction values from the joystick
+            float horizontal = _joystick.Horizontal;
+            float vertical = _joystick.Vertical;
+
+            // Check if there is joystick input
+            if (Mathf.Approximately(horizontal, 0f) && Mathf.Approximately(vertical, 0f))
+            {
+                // No joystick input, do not update the weapon's rotation
+                weaponRotation = weapon.rotation;
+                return;
+            }
+
+            // Calculate the rotation angle based on joystick input
+            float angle = Mathf.Atan2(vertical, horizontal) * Mathf.Rad2Deg;
+
+            // Apply the rotation to the weapon
+            weapon.rotation = Quaternion.Euler(0f, 0f, angle);
+            weaponRotation = weapon.rotation;
+        }
+    }
+
+    private void Shoot(Quaternion weaponRotation)
+    {
+        if (_joystick != null && weapon!=null && Input.GetKeyDown(KeyCode.Space))
+        {
+            Bullet bullet = Instantiate(bulletPrefab, weapon.position + new Vector3(0f,0f,0), Quaternion.identity);
+            bullet.SetDirection(weaponRotation);
+            currentAmmo = currentAmmo - 1;
+            ammoBar.SetAmmo(currentAmmo);
         }
     }
 

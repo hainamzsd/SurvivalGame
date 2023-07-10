@@ -8,6 +8,7 @@ TagManager:
   - Human
   - Item
   - WeaponPivot
+  - Weapon
   layers:
   - Default
   - TransparentFX
