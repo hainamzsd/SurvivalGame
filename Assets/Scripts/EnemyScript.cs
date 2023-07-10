@@ -20,13 +20,12 @@ public class EnemyScript : MonoBehaviour
     private bool isAttacking = false;
     private bool isPlayerDetected = false;
     private Vector3 initialPosition;
-
-
-  
+    private EnemyAnimation m_animation;
 
     // Start is called before the first frame update
     void Start()
     {
+        m_animation = GetComponent<EnemyAnimation>();
         currentHealth = maxHealth;
         enemyUI.SetMaxHealth(maxHealth);
 
@@ -61,9 +60,14 @@ public class EnemyScript : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Z))
         {
+            m_animation.PlayHit();
             currentHealth = currentHealth - 20;
             enemyUI.SetHealth(currentHealth);
             generalUI.createPopUp(transform.position, "20", 2);
+        }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            m_animation.PlayDead();
         }
     }
 
@@ -71,7 +75,8 @@ public class EnemyScript : MonoBehaviour
     {
         if(currentHealth <= 0)
         {
-            Destroy(this.gameObject);
+            m_animation.PlayDead();
+            Destroy(this.gameObject, 1f);
         }
     }
 
@@ -94,18 +99,22 @@ public class EnemyScript : MonoBehaviour
         Player player = FindObjectOfType<Player>(); 
         if (player != null)
         {
+            m_animation.PlayWalk();
+
             Vector2 direction = player.transform.position - transform.position;
             rb.velocity = direction.normalized * chaseSpeed;
 
             // Check if the player is out of the detection radius
             if (Vector2.Distance(initialPosition, player.transform.position) > detectionRadius)
             {
+                m_animation.PlayIdle();
                 isPlayerDetected = false;
                 rb.velocity = Vector2.zero;
             }
             // Check if the enemy is close enough to attack
             else if (direction.magnitude <= attackRange)
             {
+                m_animation.PlayAttack();
                 AttackPlayer();
             }
         }
@@ -117,11 +126,14 @@ public class EnemyScript : MonoBehaviour
         // Replace this with your own code to damage the player or trigger any other attack-related actions
         Debug.Log("Enemy attacks player!");
 
+        m_animation.PlayIdle();
         isAttacking = true;
         rb.velocity = Vector2.zero;
 
         // Wait for some time before allowing the enemy to attack again
         float attackCooldown = 2f;
+
+        m_animation.PlayAttack();
         Invoke(nameof(ResetAttack), attackCooldown);
     }
 
