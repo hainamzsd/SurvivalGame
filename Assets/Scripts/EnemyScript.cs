@@ -19,8 +19,12 @@ public class EnemyScript : MonoBehaviour
     private Rigidbody2D rb;
     private bool isAttacking = false;
     private bool isPlayerDetected = false;
-    private Vector3 initialPosition;
+
+   
     private EnemyAnimation m_animation;
+
+    private Vector3 currentPosition;
+
 
     // Start is called before the first frame update
     void Start()
@@ -30,13 +34,12 @@ public class EnemyScript : MonoBehaviour
         enemyUI.SetMaxHealth(maxHealth);
 
         rb = GetComponent<Rigidbody2D>();
-        initialPosition = transform.position;
     }
 
 
     private void Update()
     {
-
+        currentPosition = transform.position;
         if (!isAttacking)
         {
             if (!isPlayerDetected)
@@ -50,33 +53,50 @@ public class EnemyScript : MonoBehaviour
         }
 
 
-        takeDamage();
-        die();
     }
   
 
 
     void takeDamage()
     {
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
+
             m_animation.PlayHit();
-            currentHealth = currentHealth - 20;
-            enemyUI.SetHealth(currentHealth);
-            generalUI.createPopUp(transform.position, "20", 2);
-        }
+
+
         if (Input.GetKeyDown(KeyCode.X))
         {
             m_animation.PlayDead();
         }
+
+            currentHealth = currentHealth - 20;
+            enemyUI.SetHealth(currentHealth);
+            generalUI.createPopUp(transform.position, "20", 2);
+        die();
+
     }
 
     void die()
     {
-        if(currentHealth <= 0)
+        Player player = FindObjectOfType<Player>();
+        if (currentHealth <= 0)
         {
+
             m_animation.PlayDead();
-            Destroy(this.gameObject, 1f);
+
+            if(player != null)
+            {
+                player.GainExp(20);
+            }
+            Destroy(this.gameObject);
+
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == "Bullet")
+        {
+            takeDamage();
         }
     }
 
@@ -96,7 +116,7 @@ public class EnemyScript : MonoBehaviour
 
     private void ChasePlayer()
     {
-        Player player = FindObjectOfType<Player>(); 
+        Player player = FindObjectOfType<Player>();
         if (player != null)
         {
             m_animation.PlayWalk();
@@ -105,7 +125,7 @@ public class EnemyScript : MonoBehaviour
             rb.velocity = direction.normalized * chaseSpeed;
 
             // Check if the player is out of the detection radius
-            if (Vector2.Distance(initialPosition, player.transform.position) > detectionRadius)
+            if (Vector2.Distance(currentPosition, player.transform.position) > detectionRadius)
             {
                 m_animation.PlayIdle();
                 isPlayerDetected = false;
@@ -122,18 +142,20 @@ public class EnemyScript : MonoBehaviour
 
     private void AttackPlayer()
     {
+        Player player = FindObjectOfType<Player>();
+
         // Perform the attack on the player
         // Replace this with your own code to damage the player or trigger any other attack-related actions
-        Debug.Log("Enemy attacks player!");
 
         m_animation.PlayIdle();
+        player.TakeDamage(20);
         isAttacking = true;
         rb.velocity = Vector2.zero;
-
+        
         // Wait for some time before allowing the enemy to attack again
-        float attackCooldown = 2f;
 
         m_animation.PlayAttack();
+        float attackCooldown = 1f;
         Invoke(nameof(ResetAttack), attackCooldown);
     }
 

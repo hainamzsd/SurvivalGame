@@ -1,5 +1,94 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &592753554
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 592753555}
+  m_Layer: 6
+  m_Name: WeaponPivot
+  m_TagString: WeaponPivot
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &592753555
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 592753554}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.72, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2947279167003140952}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &630705328
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 630705329}
+  - component: {fileID: 630705330}
+  m_Layer: 6
+  m_Name: HandleCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &630705329
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 630705328}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2947279167003140952}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &630705330
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 630705328}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1 &2947279167003140959
 GameObject:
   m_ObjectHideFlags: 0
@@ -13,7 +102,7 @@ GameObject:
   - component: {fileID: 2947279167003140958}
   - component: {fileID: 2947279167003140954}
   - component: {fileID: 2947279167003140955}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MainPlayer 1
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -33,6 +122,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6304706797605880635}
+  - {fileID: 592753555}
+  - {fileID: 630705329}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -0.78}
@@ -109,17 +200,19 @@ MonoBehaviour:
   healthBar: {fileID: 0}
   maxHealth: 100
   health: 0
-  meleeWeapon: {fileID: 0}
   rotationSpeed: 100
   swingRadius: 2
   attackDuration: 0.5
   currentLevel: 1
   currentExp: 0
   maxExp: 0
-  remainingAmmo: 0
-  maxClip: 0
-  currentAmmo: 0
-  reloadTime: 0
+  remainingAmmo: 15
+  maxClip: 12
+  currentAmmo: 2
+  reloadTime: 1.5
+  weapon: {fileID: 0}
+  weaponSprite: {fileID: 0}
+  bulletPrefab: {fileID: 6784955378418018462, guid: 03fb2c83e537de448ab52fa0a6cdaf98, type: 3}
 --- !u!50 &2947279167003140954
 Rigidbody2D:
   serializedVersion: 4
@@ -140,7 +233,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &2947279167003140955
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -179,7 +272,7 @@ GameObject:
   - component: {fileID: 3520265592865920393}
   - component: {fileID: 486142142174761261}
   - component: {fileID: 4459374353422633649}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlayerCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -204,7 +297,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -0.03}
   m_SizeDelta: {x: 99.8499, y: 102.7728}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &3520265592865920393
@@ -279,7 +372,7 @@ GameObject:
   - component: {fileID: 228088548004076374}
   - component: {fileID: 2593578465357228554}
   - component: {fileID: 2695730947573957203}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -354,7 +447,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6304706797605880635}
   - component: {fileID: 937478636737571808}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlayerUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -401,7 +494,7 @@ GameObject:
   - component: {fileID: 7926216666231706498}
   - component: {fileID: 9182272251142556421}
   - component: {fileID: 7028164129309296697}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -475,7 +568,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3313619244058715667}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -513,7 +606,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7953222205000004045}
   - component: {fileID: 8561997411764226152}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ReloadBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}

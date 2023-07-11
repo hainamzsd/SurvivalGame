@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.GraphicsBuffer;
 
 public class Player : MonoBehaviour
 {
@@ -11,11 +13,12 @@ public class Player : MonoBehaviour
     public AmmoScript ammoBar;
     public GeneralUIScript GeneralUI;
     public PlayerUIScript playerUI;
+    public SpriteRenderer spriteRenderer;
 
 
     //movement
     [SerializeField]
-    private FixedJoystick _joystick;
+    public FixedJoystick _joystick;
     private Rigidbody2D _rb;
     private Vector2 move;
     [SerializeField]
@@ -29,15 +32,15 @@ public class Player : MonoBehaviour
 
 
     //attack
-    public Transform meleeWeapon;
-    public float rotationSpeed = 100f;
-    public float swingRadius = 2f;
-    public float attackDuration = 0.5f;
-    private bool isAttacking = false;
-    private Quaternion initialRotation;
+    //public Transform meleeWeapon;
+    //public float rotationSpeed = 100f;
+    //public float swingRadius = 2f;
+    //public float attackDuration = 0.5f;
+    //private bool isAttacking = false;
+    //private Quaternion initialRotation;
 
     //level
-    public int currentLevel = 1;
+    public int currentLevel { get; set; } = 1;
     const int XP_INCREMENT_PER_LEVEL = 100;
     public int currentExp;
     public int maxExp;
@@ -48,17 +51,33 @@ public class Player : MonoBehaviour
     public int currentAmmo;
     public float reloadTime;
 
+    //weapon
+    public Transform weapon;
+    public SpriteRenderer weaponSprite;
+    private bool isFacingRight = true;
+
+    //shoot
+    [SerializeField]
+    public Bullet bulletPrefab;
+    private Quaternion weaponRotation;
 
 
     // Start is called before the first frame update
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         //health
         health = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
+
+        //ammo
+        maxClip = 10;
+        currentAmmo = 10;
+        ammoBar.SetAmmo(currentAmmo);
+        ammoBar.SetMaxClip(maxClip);
         //attack
-        initialRotation = meleeWeapon.rotation;
+        //initialRotation = meleeWeapon.rotation;
 
         //level
         maxExp = GetRequiredExpForLevel(1);
@@ -71,18 +90,16 @@ public class Player : MonoBehaviour
     {
         //movement
         Movement();
-        takeDamage();
         healing();
-        shoot();
-        GainExp(20);
         reload();
+        ControlWeapon();
     }
 
     void Movement()
     {
-        move.x = _joystick.Horizontal;
-        move.y = _joystick.Vertical;
-        _rb.MovePosition(_rb.position + move * _moveSpeed * Time.deltaTime);
+            move.x = _joystick.Horizontal;
+            move.y = _joystick.Vertical;
+            _rb.MovePosition(_rb.position + move * _moveSpeed * Time.deltaTime);
     }
 
     public void TakeDamage(int damageAmount)
@@ -91,54 +108,62 @@ public class Player : MonoBehaviour
         health = Mathf.Max(health, 0); // Ensure health doesn't go below zero
         //healthBar.value = health;
 
+        healthBar.SetHealth(health);
+        GeneralUI.createPopUp(transform.position, damageAmount.ToString(), 2);
+
         if (health <= 0)
         {
-            
+            Destroy(this.gameObject);
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "Enemy")
+      
+        if (collision.CompareTag("Weapon"))
         {
-            TakeDamage(10);
+            // Assign the weapon to the weapon variable
+            weapon = collision.transform;
+            weaponSprite = collision.GetComponent<SpriteRenderer>();
         }
+       
     }
 
-    public void MeleeAttack()
-    {
-        if (!isAttacking)
-        {
-            isAttacking = true;
-            StartCoroutine(SwingWeapon());
-            Invoke("DisableMeleeAttack", attackDuration);
-        }
-    }
+   
+    //public void MeleeAttack()
+    //{
+    //    if (!isAttacking)
+    //    {
+    //        isAttacking = true;
+    //        StartCoroutine(SwingWeapon());
+    //        Invoke("DisableMeleeAttack", attackDuration);
+    //    }
+    //}
 
-    //attack melee
-    private IEnumerator SwingWeapon()
-    {
-        float elapsedTime = 0f;
-        Quaternion targetRotation = initialRotation;
+    ////attack melee
+    //private IEnumerator SwingWeapon()
+    //{
+    //    float elapsedTime = 0f;
+    //    Quaternion targetRotation = initialRotation;
 
-        while (elapsedTime < attackDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            float t = elapsedTime / attackDuration;
+    //    while (elapsedTime < attackDuration)
+    //    {
+    //        elapsedTime += Time.deltaTime;
+    //        float t = elapsedTime / attackDuration;
 
-            targetRotation *= Quaternion.Euler(0f, 0f, -rotationSpeed * Time.deltaTime);
-            meleeWeapon.rotation = Quaternion.Lerp(initialRotation, targetRotation, t);
+    //        targetRotation *= Quaternion.Euler(0f, 0f, -rotationSpeed * Time.deltaTime);
+    //        meleeWeapon.rotation = Quaternion.Lerp(initialRotation, targetRotation, t);
 
-            yield return null;
-        }
+    //        yield return null;
+    //    }
 
-        meleeWeapon.rotation = initialRotation;
-    }
+    //    meleeWeapon.rotation = initialRotation;
+    //}
 
-    private void DisableMeleeAttack()
-    {
-        isAttacking = false;
-    }
+    //private void DisableMeleeAttack()
+    //{
+    //    isAttacking = false;
+    //}
 
 
     //leveling
@@ -158,27 +183,14 @@ public class Player : MonoBehaviour
 
     public void GainExp(int expAmount)
     {
-        if (Input.GetKeyDown(KeyCode.E)) {
-            currentExp = currentExp + 20;
             experienceBar.SetExperience(currentExp);
-
             if (currentExp >= maxExp)
         {
             LevelUp();
         }
-        }
     }
 
-    
-    void takeDamage()
-    {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            health = health - 20;
-            healthBar.SetHealth(health);
-            GeneralUI.createPopUp(transform.position, "20", 2);
-        }
-    }
+   
 
     void healing()
     {
@@ -190,16 +202,7 @@ public class Player : MonoBehaviour
         }
     }
 
-  
-
-    void shoot()
-    {
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            currentAmmo = currentAmmo - 1;
-            ammoBar.SetAmmo(currentAmmo);
-        }
-    }
+   
 
     void reload()
     {
@@ -234,6 +237,84 @@ public class Player : MonoBehaviour
                 }
                 ammoBar.SetAmmo(currentAmmo);
             }
+        }
+    }
+
+    public void ControlWeapon()
+    {
+        if (_joystick != null)
+        {
+            // Get the horizontal input from the joystick
+            float horizontal = _joystick.Horizontal;
+
+            
+            // Flip the player and the weapon based on movement direction
+            if (horizontal > 0 && !isFacingRight)
+            {
+                Flip();
+            }
+            else if (horizontal < 0 && isFacingRight)
+            {
+                Flip();
+            }
+
+            // Aim the weapon based on joystick input
+            AimWeapon();
+        }
+    }
+
+    private void Flip()
+    {
+        // Flip the player horizontally
+        isFacingRight = !isFacingRight;
+
+        spriteRenderer.flipY = !isFacingRight;
+
+
+        if (weapon!= null)
+        {
+            
+            weaponSprite.flipY = !isFacingRight;
+        }
+
+    }
+
+
+    public void AimWeapon()
+    {
+        if (weapon != null && _joystick != null)
+        {
+            // Get the direction values from the joystick
+            float horizontal = _joystick.Horizontal;
+            float vertical = _joystick.Vertical;
+
+            // Check if there is joystick input
+            if (Mathf.Approximately(horizontal, 0f) && Mathf.Approximately(vertical, 0f))
+            {
+                // No joystick input, do not update the weapon's rotation
+                weaponRotation = weapon.rotation;
+                return;
+            }
+
+            // Calculate the rotation angle based on joystick input
+            float angle = Mathf.Atan2(vertical, horizontal) * Mathf.Rad2Deg;
+
+            // Apply the rotation to the weapon
+            weapon.rotation = Quaternion.Euler(0f, 0f, angle);
+            weaponRotation = weapon.rotation;
+        }
+    }
+
+    public void Shoot()
+    {
+        
+
+        if (_joystick != null && weapon!=null)
+        {
+            Bullet bullet = Instantiate(bulletPrefab, weapon.position + new Vector3(0f,0f,0), Quaternion.identity);
+            bullet.SetDirection(weaponRotation);
+            currentAmmo = currentAmmo - 1;
+            ammoBar.SetAmmo(currentAmmo);
         }
     }
 
