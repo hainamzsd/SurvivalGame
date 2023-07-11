@@ -19,13 +19,17 @@ public class EnemyScript : MonoBehaviour
     private Rigidbody2D rb;
     private bool isAttacking = false;
     private bool isPlayerDetected = false;
-    private Vector3 currentPosition;
 
+   
+    private EnemyAnimation m_animation;
+
+    private Vector3 currentPosition;
 
 
     // Start is called before the first frame update
     void Start()
     {
+        m_animation = GetComponent<EnemyAnimation>();
         currentHealth = maxHealth;
         enemyUI.SetMaxHealth(maxHealth);
 
@@ -55,10 +59,20 @@ public class EnemyScript : MonoBehaviour
 
     void takeDamage()
     {
+
+            m_animation.PlayHit();
+
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            m_animation.PlayDead();
+        }
+
             currentHealth = currentHealth - 20;
             enemyUI.SetHealth(currentHealth);
             generalUI.createPopUp(transform.position, "20", 2);
         die();
+
     }
 
     void die()
@@ -66,11 +80,15 @@ public class EnemyScript : MonoBehaviour
         Player player = FindObjectOfType<Player>();
         if (currentHealth <= 0)
         {
+
+            m_animation.PlayDead();
+
             if(player != null)
             {
                 player.GainExp(20);
             }
             Destroy(this.gameObject);
+
         }
     }
 
@@ -101,18 +119,22 @@ public class EnemyScript : MonoBehaviour
         Player player = FindObjectOfType<Player>();
         if (player != null)
         {
+            m_animation.PlayWalk();
+
             Vector2 direction = player.transform.position - transform.position;
             rb.velocity = direction.normalized * chaseSpeed;
 
             // Check if the player is out of the detection radius
             if (Vector2.Distance(currentPosition, player.transform.position) > detectionRadius)
             {
+                m_animation.PlayIdle();
                 isPlayerDetected = false;
                 rb.velocity = Vector2.zero;
             }
             // Check if the enemy is close enough to attack
             else if (direction.magnitude <= attackRange)
             {
+                m_animation.PlayAttack();
                 AttackPlayer();
             }
         }
@@ -124,11 +146,15 @@ public class EnemyScript : MonoBehaviour
 
         // Perform the attack on the player
         // Replace this with your own code to damage the player or trigger any other attack-related actions
+
+        m_animation.PlayIdle();
         player.TakeDamage(20);
         isAttacking = true;
         rb.velocity = Vector2.zero;
         
         // Wait for some time before allowing the enemy to attack again
+
+        m_animation.PlayAttack();
         float attackCooldown = 1f;
         Invoke(nameof(ResetAttack), attackCooldown);
     }
