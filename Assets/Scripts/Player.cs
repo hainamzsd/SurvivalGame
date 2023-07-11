@@ -61,10 +61,14 @@ public class Player : MonoBehaviour
     public Bullet bulletPrefab;
     private Quaternion weaponRotation;
 
+    private Animator animator;
+
 
     // Start is called before the first frame update
     void Start()
     {
+
+        animator = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         //health
@@ -97,9 +101,15 @@ public class Player : MonoBehaviour
 
     void Movement()
     {
+        
             move.x = _joystick.Horizontal;
             move.y = _joystick.Vertical;
             _rb.MovePosition(_rb.position + move * _moveSpeed * Time.deltaTime);
+        // Check if the player is not walking
+        bool isWalking = move.magnitude > 0f;
+
+        // Set the speed variable in the animator
+        animator.SetFloat("speed", isWalking ? 1f : -1f);
     }
 
     public void TakeDamage(int damageAmount)
@@ -183,8 +193,9 @@ public class Player : MonoBehaviour
 
     public void GainExp(int expAmount)
     {
-            experienceBar.SetExperience(currentExp);
-            if (currentExp >= maxExp)
+            experienceBar.SetExperience(expAmount);
+        GeneralUI.createPopUp(transform.position, expAmount.ToString() + " EXP", 4);
+        if (currentExp >= maxExp)   
         {
             LevelUp();
         }
@@ -268,7 +279,7 @@ public class Player : MonoBehaviour
         // Flip the player horizontally
         isFacingRight = !isFacingRight;
 
-        spriteRenderer.flipY = !isFacingRight;
+        spriteRenderer.flipX = !isFacingRight;
 
 
         if (weapon!= null)
