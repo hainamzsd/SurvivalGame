@@ -59,7 +59,14 @@ public class Player : MonoBehaviour
     //shoot
     [SerializeField]
     public Bullet bulletPrefab;
-    private Quaternion weaponRotation;
+    public GameObject Object;
+    Vector2 GameobjectRotation;
+    private float GameobjectRotation2;
+    private float GameobjectRotation3;
+    public FixedJoystick aim;
+    private Transform shootingpoint;
+
+
 
     private Animator animator;
 
@@ -133,8 +140,10 @@ public class Player : MonoBehaviour
         if (collision.CompareTag("Weapon"))
         {
             // Assign the weapon to the weapon variable
+            Object = collision.gameObject;
             weapon = collision.transform;
             weaponSprite = collision.GetComponent<SpriteRenderer>();
+            shootingpoint = collision.transform.Find("ShootingPoint").transform;
         }
        
     }
@@ -282,11 +291,11 @@ public class Player : MonoBehaviour
         spriteRenderer.flipX = !isFacingRight;
 
 
-        if (weapon!= null)
-        {
+        //if (weapon!= null)
+        //{
             
-            weaponSprite.flipY = !isFacingRight;
-        }
+        //    weaponSprite.flipY = !isFacingRight;
+        //}
 
     }
 
@@ -294,39 +303,69 @@ public class Player : MonoBehaviour
     public void AimWeapon()
     {
         if (weapon != null && _joystick != null)
-        {
-            // Get the direction values from the joystick
-            float horizontal = _joystick.Horizontal;
-            float vertical = _joystick.Vertical;
+        {//Gets the input from the jostick
 
-            // Check if there is joystick input
-            if (Mathf.Approximately(horizontal, 0f) && Mathf.Approximately(vertical, 0f))
+            GameobjectRotation = new Vector2(aim.Horizontal, aim.Vertical);
+
+            GameobjectRotation3 = GameobjectRotation.x;
+
+            if (isFacingRight)
             {
-                // No joystick input, do not update the weapon's rotation
-                weaponRotation = weapon.rotation;
-                return;
+                //Rotates the object if the player is facing right
+                GameobjectRotation2 = GameobjectRotation.x + GameobjectRotation.y * 90;
+                Object.transform.rotation = Quaternion.Euler(0f, 0f, GameobjectRotation2);
+            }
+            else
+            {
+                //Rotates the object if the player is facing left
+                GameobjectRotation2 = GameobjectRotation.x + GameobjectRotation.y * -90;
+                Object.transform.rotation = Quaternion.Euler(0f, 180f, -GameobjectRotation2);
+            }
+            if (GameobjectRotation3 < 0 && isFacingRight)
+            {
+                // Executes the void: Flip()
+                Flip();
+            }
+            else if (GameobjectRotation3 > 0 && !isFacingRight)
+            {
+                // Executes the void: Flip()
+                Flip();
             }
 
-            // Calculate the rotation angle based on joystick input
-            float angle = Mathf.Atan2(vertical, horizontal) * Mathf.Rad2Deg;
-
-            // Apply the rotation to the weapon
-            weapon.rotation = Quaternion.Euler(0f, 0f, angle);
-            weaponRotation = weapon.rotation;
+            // Trigger shoot if the joystick is not centered
+            if (GameobjectRotation != Vector2.zero)
+            {
+                Shoot();
+            }
         }
     }
 
+    public float fireRate = 0.5f; // Adjust the value to set the desired fire rate
+    private float lastShotTime = 0f;
+
     public void Shoot()
     {
-        
-
-        if (_joystick != null && weapon!=null)
+        if (_joystick != null && weapon != null && CanShoot())
         {
-            Bullet bullet = Instantiate(bulletPrefab, weapon.position + new Vector3(0f,0f,0), Quaternion.identity);
-            bullet.SetDirection(weaponRotation);
+            Bullet bullet = Instantiate(bulletPrefab, shootingpoint.position, weapon.rotation);
+            Bullet bulletScript = bullet.GetComponent<Bullet>();
+
+            // Calculate the direction of the bullet based on the aim variable
+            Vector2 bulletDirection = new Vector2(aim.Horizontal, aim.Vertical).normalized;
+
+            // Assign the direction to the bullet script
+            bulletScript.SetDirection(bulletDirection, isFacingRight);
+
             currentAmmo = currentAmmo - 1;
             ammoBar.SetAmmo(currentAmmo);
+
+            lastShotTime = Time.time; // Update the last shot time
         }
+    }
+    private bool CanShoot()
+    {
+        // Check if enough time has passed since the last shot
+        return Time.time - lastShotTime >= fireRate;
     }
 
 }
