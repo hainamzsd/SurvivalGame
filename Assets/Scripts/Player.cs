@@ -41,6 +41,7 @@ public class Player : MonoBehaviour
 
     //level
     public int currentLevel { get; set; } = 1;
+
     const int XP_INCREMENT_PER_LEVEL = 100;
     public int currentExp;
     public int maxExp;
@@ -194,15 +195,16 @@ public class Player : MonoBehaviour
     private void LevelUp()
     {
         Debug.Log("Level Up! Current Level: " + currentLevel);
-
         int requiredExpForNextLevel = GetRequiredExpForLevel(currentLevel + 1);
         maxExp = requiredExpForNextLevel;
+        currentLevel += 1;
         currentExp = 0;
     }
 
     public void GainExp(int expAmount)
     {
-            experienceBar.SetExperience(expAmount);
+        currentExp += expAmount;
+            experienceBar.SetExperience(currentExp);
         GeneralUI.createPopUp(transform.position, expAmount.ToString() + " EXP", 4);
         if (currentExp >= maxExp)   
         {

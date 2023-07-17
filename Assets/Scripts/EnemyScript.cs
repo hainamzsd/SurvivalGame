@@ -23,7 +23,7 @@ public class EnemyScript : MonoBehaviour
     private bool isAttacking = false;
     private bool isPlayerDetected = false;
 
-   
+
     private EnemyAnimation m_animation;
 
     private Vector3 currentPosition;
@@ -62,35 +62,43 @@ public class EnemyScript : MonoBehaviour
 
 
     }
-  
+
 
 
     void takeDamage()
     {
-            m_animation.PlayHit();
-            currentHealth = currentHealth - 20;
-            enemyUI.SetHealth(currentHealth);
-            generalUI.createPopUp(transform.position, "20", 2);
-            die();
+        m_animation.PlayHit();
+        currentHealth = currentHealth - 20;
+        enemyUI.SetHealth(currentHealth);
+        if(isDead == false)
+        {        generalUI.createPopUp(transform.position, "20", 2);
+
+        }
+        die();
 
     }
 
     public void die()
     {
+
         Player player = FindObjectOfType<Player>();
         if (currentHealth <= 0)
         {
             if (player != null)
             {
-                player.GainExp(20);
+                if (isDead == false)
+                {
+
+                    player.GainExp(20);
+                }
+
             }
             rb.velocity = new Vector2(0, 0);
             isDead = true;
             StartCoroutine(DestroyAfterDelay(1f)); // Wait for 2 seconds before destroying
-
-           
-
         }
+
+
     }
 
     IEnumerator DestroyAfterDelay(float delay)
@@ -105,7 +113,7 @@ public class EnemyScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "Bullet")
+        if (collision.tag == "Bullet")
         {
             takeDamage();
         }
@@ -137,7 +145,7 @@ public class EnemyScript : MonoBehaviour
         Player player = FindObjectOfType<Player>();
         if (player != null)
         {
-            if(isDead != true)
+            if (isDead != true)
             {
                 m_animation.PlayWalk();
 
@@ -166,7 +174,7 @@ public class EnemyScript : MonoBehaviour
                     AttackPlayer();
                 }
             }
-           
+
         }
     }
 
@@ -180,7 +188,7 @@ public class EnemyScript : MonoBehaviour
         player.TakeDamage(20);
         isAttacking = true;
         rb.velocity = Vector2.zero;
-        
+
         // Wait for some time before allowing the enemy to attack again
 
         float attackCooldown = 1f;
