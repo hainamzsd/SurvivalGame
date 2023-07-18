@@ -47,8 +47,7 @@ public class Player : MonoBehaviour
     public int maxExp;
 
     //ammo
-    public int remainingAmmo;
-    public int maxClip;
+    public int maxAmmo;
     public int currentAmmo;
     public float reloadTime;
 
@@ -71,6 +70,8 @@ public class Player : MonoBehaviour
 
     private Animator animator;
 
+  
+
 
     // Start is called before the first frame update
     void Start()
@@ -84,10 +85,10 @@ public class Player : MonoBehaviour
         healthBar.SetMaxHealth(maxHealth);
 
         //ammo
-        maxClip = 10;
+        maxAmmo = 10;
         currentAmmo = 10;
         ammoBar.SetAmmo(currentAmmo);
-        ammoBar.SetMaxClip(maxClip);
+        ammoBar.SetMaxClip(maxAmmo);
         //attack
         //initialRotation = meleeWeapon.rotation;
 
@@ -102,11 +103,11 @@ public class Player : MonoBehaviour
     {
         //movement
         Movement();
-        healing();
-        reload();
         ControlWeapon();
-    }
 
+        
+    }
+    
     void Movement()
     {
         
@@ -198,7 +199,12 @@ public class Player : MonoBehaviour
         int requiredExpForNextLevel = GetRequiredExpForLevel(currentLevel + 1);
         maxExp = requiredExpForNextLevel;
         currentLevel += 1;
+
         currentExp = 0;
+        maxAmmo = maxAmmo * currentAmmo;
+        currentAmmo = maxAmmo;
+        ammoBar.SetMaxClip(maxAmmo);
+        ammoBar.SetAmmo(currentAmmo);
     }
 
     public void GainExp(int expAmount)
@@ -212,56 +218,33 @@ public class Player : MonoBehaviour
         }
     }
 
-   
 
-    void healing()
+
+
+
+
+    private bool isReload = false;
+    public void Reload()
     {
-        if (Input.GetKeyDown(KeyCode.J))
+        if (!isReload)
         {
-            health = health + 20;
-            healthBar.SetHealth(health);
-            GeneralUI.createPopUp(transform.position, "20", 1);
+            GeneralUI.createPopUp(transform.position, "No Ammo Left", 5);
+            playerUI.reloadActivation(reloadTime);
         }
+        StartCoroutine(ReloadCoroutine());
     }
 
-   
-
-    void reload()
+    private IEnumerator ReloadCoroutine()
     {
-        //Press R
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            //No ammo
-            if (remainingAmmo <= 0)
-            {
-                GeneralUI.createPopUp(transform.position, "No Ammo Left", 5);
-            }
-            //Full clip
-            else if (currentAmmo == maxClip)
-            {
-                GeneralUI.createPopUp(transform.position, "Full Clip", 5);
-            }
-            //Reloading
-            else
-            {
-                playerUI.reloadActivation(reloadTime);
-                int reloadAmmo = maxClip - currentAmmo;
-                if (remainingAmmo >= reloadAmmo)
-                {
-                    currentAmmo = currentAmmo + reloadAmmo;
-                    remainingAmmo = remainingAmmo - reloadAmmo;
+        isReload = true;
+       
 
-                }
-                else
-                {
-                    currentAmmo = currentAmmo + remainingAmmo;
-                    remainingAmmo = 0;
-                }
-                ammoBar.SetAmmo(currentAmmo);
-            }
-        }
+        yield return new WaitForSeconds(reloadTime);
+
+        currentAmmo = maxAmmo;
+        ammoBar.SetAmmo(currentAmmo);
+        isReload = false;
     }
-
     public void ControlWeapon()
     {
         if (_joystick != null)
@@ -360,14 +343,21 @@ public class Player : MonoBehaviour
 
             currentAmmo = currentAmmo - 1;
             ammoBar.SetAmmo(currentAmmo);
-
             lastShotTime = Time.time; // Update the last shot time
         }
     }
     private bool CanShoot()
     {
-        // Check if enough time has passed since the last shot
-        return Time.time - lastShotTime >= fireRate;
+        if(currentAmmo <= 0)
+        {
+          
+            Reload();
+            return false;
+        }
+        float modifiedFireRate = fireRate / currentLevel; // Adjust the division factor as needed
+
+        // Check if enough time has passed since the last shot using the modified fire rate
+        return Time.time - lastShotTime >= modifiedFireRate;
     }
 
 }

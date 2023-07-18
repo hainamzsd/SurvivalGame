@@ -8,6 +8,7 @@ public class EnemyScript : MonoBehaviour
     public bool isDead = false;
 
     public EnemyUIScript enemyUI;
+    [SerializeField]
     public GeneralUIScript generalUI;
 
     public float maxHealth;
@@ -31,6 +32,8 @@ public class EnemyScript : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     private bool isFacingRight = true;
 
+    private int killCount = 0;
+    private GameSystem gameSystem;
 
     // Start is called before the first frame update
     void Start()
@@ -40,8 +43,9 @@ public class EnemyScript : MonoBehaviour
         m_animation = GetComponent<EnemyAnimation>();
         currentHealth = maxHealth;
         enemyUI.SetMaxHealth(maxHealth);
-
+        generalUI = GetComponent<GeneralUIScript>();
         rb = GetComponent<Rigidbody2D>();
+        gameSystem = FindObjectOfType<GameSystem>();
     }
 
 
@@ -70,10 +74,10 @@ public class EnemyScript : MonoBehaviour
         m_animation.PlayHit();
         currentHealth = currentHealth - 20;
         enemyUI.SetHealth(currentHealth);
-        if(isDead == false)
-        {        generalUI.createPopUp(transform.position, "20", 2);
+        //if(isDead == false)
+        //{        generalUI.createPopUp(transform.position, "20", 2);
 
-        }
+        //}
         die();
 
     }
@@ -95,6 +99,8 @@ public class EnemyScript : MonoBehaviour
             }
             rb.velocity = new Vector2(0, 0);
             isDead = true;
+            killCount++;
+            gameSystem.UpdateKillCount(killCount);
             StartCoroutine(DestroyAfterDelay(1f)); // Wait for 2 seconds before destroying
         }
 
