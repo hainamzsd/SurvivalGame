@@ -4,23 +4,45 @@ using UnityEngine;
 
 public class Weapons : MonoBehaviour
 {
+    private Transform player;
+    private Transform pivotPoint;
 
-    private Transform attachmentPoint;
+    public int maxClip { get; set; } = 20;
+    public int currentAmmo { get; set; } = 20;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        attachmentPoint = GameObject.FindGameObjectWithTag("WeaponPivot").transform;
-
-        // Make the weapon a child of the attachment point
-        transform.SetParent(attachmentPoint);
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.Euler(0f, 0f, -90f);
+        pivotPoint = GameObject.FindGameObjectWithTag("WeaponPivot").transform;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        if (player != null)
+        {
+            // Update the weapon's position to match the pivot point's position
+            transform.position = pivotPoint.position;
+        }
     }
+
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            player = other.transform;
+
+            // Attach the weapon to the pivot point
+            transform.SetParent(pivotPoint);
+            transform.localPosition = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
+
+            
+        }
+    }
+
+
+
+
+
+
 }
