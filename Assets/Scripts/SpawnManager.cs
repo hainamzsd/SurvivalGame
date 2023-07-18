@@ -10,7 +10,7 @@ public class SpawnManager : MonoBehaviour
     public float initialSpawnCount = 10f;
     public float spawnIncreaseRate = 2f;
     public Tilemap obstacleTilemap;
-    public Player playerScript; // Reference to the player script
+    public Player playerScript;
 
     private float currentSpawnCount;
     private Bounds tilemapBounds;
