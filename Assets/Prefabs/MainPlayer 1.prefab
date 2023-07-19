@@ -67,7 +67,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 630705329}
-  - component: {fileID: 1210607921}
   m_Layer: 6
   m_Name: HandleCollider
   m_TagString: Untagged
@@ -90,32 +89,6 @@ Transform:
   m_Father: {fileID: 2947279167003140952}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &1210607921
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 630705328}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.0060111433, y: -0.006521389}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.25525317, y: 0.3526593}
-  m_EdgeRadius: 0
 --- !u!1 &893606526
 GameObject:
   m_ObjectHideFlags: 0
@@ -272,14 +245,13 @@ MonoBehaviour:
   playerUI: {fileID: 937478636737571808}
   spriteRenderer: {fileID: 2947279167003140953}
   _joystick: {fileID: 0}
-  _moveSpeed: 15
+  _moveSpeed: 16
   healthBar: {fileID: 0}
   maxHealth: 100
   health: 0
   currentExp: 0
   maxExp: 0
-  remainingAmmo: 15
-  maxClip: 12
+  maxAmmo: 0
   currentAmmo: 2
   reloadTime: 1.5
   weapon: {fileID: 0}
@@ -287,6 +259,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 6784955378418018462, guid: 03fb2c83e537de448ab52fa0a6cdaf98, type: 3}
   Object: {fileID: 0}
   aim: {fileID: 0}
+  deathScreen: {fileID: 0}
   fireRate: 0.5
 --- !u!50 &2947279167003140954
 Rigidbody2D:
@@ -322,7 +295,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.0009990111, y: 0.003348723}
+  m_Offset: {x: 0.0068379194, y: -0.005733967}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -333,7 +306,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.30572337, y: 0.40203038}
+  m_Size: {x: 0.2551199, y: 0.3527245}
   m_EdgeRadius: 0
 --- !u!95 &5874545665425588380
 Animator:
@@ -557,7 +530,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6497967014707097373}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.17, y: 0.9103489, z: -1.6012537}
+  m_LocalPosition: {x: -0.213, y: 0.216, z: -1.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -612,7 +585,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: -2.5, y: 0}
   m_SizeDelta: {x: 5, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -727,8 +700,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 80.81}
-  m_SizeDelta: {x: 160, y: 39.61}
+  m_AnchoredPosition: {x: 19.5, y: 10.7}
+  m_SizeDelta: {x: 62.85, y: 16.02}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8561997411764226152
 MonoBehaviour:

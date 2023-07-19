@@ -10,12 +10,23 @@ public class CameraBehaviour : MonoBehaviour
 
     private void LateUpdate()
     {
-        // Calculate the desired position for the camera
-        Vector3 desiredPosition = player.position + offset;
-        desiredPosition.z = transform.position.z; // Maintain the camera's original z-position
+        Player playerScript = FindObjectOfType<Player>();
+        if (playerScript != null)
+        {
+            if (playerScript.isDeath) {
+                return;
+            }
+            else
+            {
+                // Calculate the desired position for the camera
+                Vector3 desiredPosition = player.position + offset;
+                desiredPosition.z = transform.position.z; // Maintain the camera's original z-position
 
-        // Smoothly move the camera towards the desired position
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-        transform.position = smoothedPosition;
+                // Smoothly move the camera towards the desired position
+                Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
+                transform.position = smoothedPosition;
+            }
+        }
+    
     }
 }

@@ -10,7 +10,7 @@ public class GameSystem : MonoBehaviour
     public Text killCountText;
     public Text gameTimeText;
 
-    private int killCount = 0;
+    public int killCount { get; set; } = 0;
     private float gameTime = 0f;
 
     private void Update()
