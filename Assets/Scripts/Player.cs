@@ -30,7 +30,7 @@ public class Player : MonoBehaviour
     public float maxHealth = 100;
     public float health;
 
-
+    public bool isDeath { get; set; } = false;
     //attack
     //public Transform meleeWeapon;
     //public float rotationSpeed = 100f;
@@ -70,13 +70,14 @@ public class Player : MonoBehaviour
 
     private Animator animator;
 
-  
+    public DeathScreen deathScreen;
+    public AudioSource audioSource;
 
 
     // Start is called before the first frame update
     void Start()
     {
-
+        deathScreen = FindObjectOfType<DeathScreen>();
         animator = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -132,7 +133,10 @@ public class Player : MonoBehaviour
 
         if (health <= 0)
         {
+            isDeath = true;
             Destroy(this.gameObject);
+            
+            deathScreen.FadeToBlack();
         }
     }
 
@@ -332,6 +336,7 @@ public class Player : MonoBehaviour
     {
         if (_joystick != null && weapon != null && CanShoot())
         {
+            audioSource.Play();
             Bullet bullet = Instantiate(bulletPrefab, shootingpoint.position, weapon.rotation);
             Bullet bulletScript = bullet.GetComponent<Bullet>();
 

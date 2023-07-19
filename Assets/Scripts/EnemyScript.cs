@@ -94,12 +94,12 @@ public class EnemyScript : MonoBehaviour
                 {
 
                     player.GainExp(20);
+                    killCount++;
                 }
 
             }
             rb.velocity = new Vector2(0, 0);
             isDead = true;
-            killCount++;
             gameSystem.UpdateKillCount(killCount);
             StartCoroutine(DestroyAfterDelay(1f)); // Wait for 2 seconds before destroying
         }
