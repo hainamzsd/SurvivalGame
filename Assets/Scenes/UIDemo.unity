@@ -381,18 +381,18 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 118130837}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 80be3d50b3f9e454891538f77cd104f1, type: 3}
+  m_audioClip: {fileID: 8300000, guid: f13c9e4dffc3d234bb972a7b8e8f1931, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.52
+  m_Volume: 0.07
   m_Pitch: 1
-  Loop: 1
+  Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 89
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
@@ -896,6 +896,10 @@ PrefabInstance:
       propertyPath: obstacleTilemap
       value: 
       objectReference: {fileID: 1091568031}
+    - target: {fileID: 3075417468381328254, guid: 4a0c9b797f3dffc4d82d751e7e4c7740, type: 3}
+      propertyPath: initialSpawnCount
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 3075417468381328255, guid: 4a0c9b797f3dffc4d82d751e7e4c7740, type: 3}
       propertyPath: m_RootOrder
       value: 8
@@ -1010,12 +1014,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 547420555}
     - target: {fileID: 2947279167003140958, guid: f59ea454186eead4f813fa9dfca4a957, type: 3}
+      propertyPath: _moveSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2947279167003140958, guid: f59ea454186eead4f813fa9dfca4a957, type: 3}
       propertyPath: experienceBar
       value: 
       objectReference: {fileID: 456992753}
     - target: {fileID: 2947279167003140959, guid: f59ea454186eead4f813fa9dfca4a957, type: 3}
       propertyPath: m_Name
       value: MainPlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 2947279167003140959, guid: f59ea454186eead4f813fa9dfca4a957, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f59ea454186eead4f813fa9dfca4a957, type: 3}

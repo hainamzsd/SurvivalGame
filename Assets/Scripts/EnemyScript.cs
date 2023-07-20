@@ -35,7 +35,21 @@ public class EnemyScript : MonoBehaviour
     private int killCount = 0;
     private GameSystem gameSystem;
 
+
+    //audio
+    public AudioSource roarAudioSource;
+    public Transform player;
+    public float maxRoarDistance = 10f;
+    public float minRoarVolume = 0.1f;
+    public float maxRoarVolume = 1.0f;
+    public float minRoarCooldown = 2f; // Minimum time between two roars
+    public float maxRoarCooldown = 5f; // Maximum time between two roars
+
+    private float nextRoarTime = 0f;
+
     // Start is called before the first frame update
+
+
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -44,13 +58,19 @@ public class EnemyScript : MonoBehaviour
         currentHealth = maxHealth;
         enemyUI.SetMaxHealth(maxHealth);
         generalUI = GetComponent<GeneralUIScript>();
+        roarAudioSource = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody2D>();
         gameSystem = FindObjectOfType<GameSystem>();
+
+        nextRoarTime = Time.time + Random.Range(minRoarCooldown, maxRoarCooldown);
+        StartCoroutine(RoarCoroutine());
+
     }
 
 
     private void Update()
     {
+       
         currentPosition = transform.position;
         if (!isAttacking)
         {
@@ -66,7 +86,33 @@ public class EnemyScript : MonoBehaviour
 
 
     }
+    private IEnumerator RoarCoroutine()
+    {
+        player = FindObjectOfType<Player>().transform;
+        if (player != null)
+        {
+            while (true)
+            {
+                if (Time.time >= nextRoarTime)
+                {
+                    float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+                    float t = Mathf.InverseLerp(maxRoarDistance, 0f, distanceToPlayer);
+                    float volume = Mathf.Lerp(maxRoarVolume, minRoarVolume, t);
 
+                    roarAudioSource.volume = volume;
+
+                    if (!roarAudioSource.isPlaying)
+                    {
+                        roarAudioSource.Play();
+                    }
+
+                    nextRoarTime = Time.time + Random.Range(minRoarCooldown, maxRoarCooldown);
+                }
+
+                yield return null;
+            }
+        }
+    }
 
 
     void takeDamage()
@@ -166,7 +212,6 @@ public class EnemyScript : MonoBehaviour
                     Flip();
                 }
 
-                // Check if the player is out of the detection radius
                 if (Vector2.Distance(currentPosition, player.transform.position) > detectionRadius)
                 {
                     m_animation.PlayIdle();

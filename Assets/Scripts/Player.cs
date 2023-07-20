@@ -77,6 +77,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         deathScreen = FindObjectOfType<DeathScreen>();
         animator = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody2D>();

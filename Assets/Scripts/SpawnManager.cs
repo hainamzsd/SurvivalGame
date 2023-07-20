@@ -15,7 +15,6 @@ public class SpawnManager : MonoBehaviour
     private float currentSpawnCount;
     private Bounds tilemapBounds;
 
-    [SerializeField]
     public int newSpawnCount;
     private void Start()
     {
@@ -66,10 +65,9 @@ public class SpawnManager : MonoBehaviour
         int playerLevel = playerScript.currentLevel;
         long totalMemory = Profiler.GetTotalReservedMemoryLong();
         long usedMemory = Profiler.GetTotalAllocatedMemoryLong();
-
         long availableMemory = totalMemory - usedMemory;
 
-        long memoryThreshold = 200 * 1024 * 1024; // Example: 200 MB
+        long memoryThreshold = 200 * 1024 * 1024;
 
         newSpawnCount = Mathf.RoundToInt(initialSpawnCount * Mathf.Pow(spawnIncreaseRate, playerLevel - 1));
 
