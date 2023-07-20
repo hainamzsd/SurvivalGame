@@ -10,7 +10,7 @@ public class VolumeSettingScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        setVolumeSettings();
     }
 
     // Update is called once per frame
@@ -22,5 +22,15 @@ public class VolumeSettingScript : MonoBehaviour
     public void setVolume(float volume)
     {
         audioMixer.SetFloat("volume", volume);
+        PlayerPrefs.SetFloat("volumeSetting", volume );
+    }
+
+    public void setVolumeSettings()
+    {
+        float volumeSetting = PlayerPrefs.GetFloat("volumeSetting");
+        if(volumeSetting != null)
+        {
+            audioMixer.SetFloat("volume", volumeSetting);
+        }
     }
 }
