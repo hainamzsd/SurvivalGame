@@ -203,10 +203,11 @@ public class Player : MonoBehaviour
         Debug.Log("Level Up! Current Level: " + currentLevel);
         int requiredExpForNextLevel = GetRequiredExpForLevel(currentLevel + 1);
         maxExp = requiredExpForNextLevel;
+        experienceBar.SetMaxExperience(maxExp);
         currentLevel += 1;
 
         currentExp = 0;
-        maxAmmo = maxAmmo * currentAmmo;
+        maxAmmo = (maxAmmo + 1) * 2;
         currentAmmo = maxAmmo;
         ammoBar.SetMaxClip(maxAmmo);
         ammoBar.SetAmmo(currentAmmo);

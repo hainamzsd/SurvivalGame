@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float bulletSpeed = 10f; // Adjust the bullet speed as desired
+    [SerializeField]
+    public float bulletSpeed = 20f; // Adjust the bullet speed as desired
     private Vector2 direction;
 
     // Method to set the direction of the bullet

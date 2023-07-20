@@ -32,8 +32,8 @@ public class EnemyScript : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     private bool isFacingRight = true;
 
-    private int killCount = 0;
     private GameSystem gameSystem;
+    private SpawnManager spawnManager;
 
 
     //audio
@@ -60,17 +60,15 @@ public class EnemyScript : MonoBehaviour
         generalUI = GetComponent<GeneralUIScript>();
         roarAudioSource = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody2D>();
-        gameSystem = FindObjectOfType<GameSystem>();
-
+        
         nextRoarTime = Time.time + Random.Range(minRoarCooldown, maxRoarCooldown);
         StartCoroutine(RoarCoroutine());
-
     }
 
 
     private void Update()
     {
-       
+        gameSystem = FindObjectOfType<GameSystem>();
         currentPosition = transform.position;
         if (!isAttacking)
         {
@@ -130,23 +128,23 @@ public class EnemyScript : MonoBehaviour
 
     public void die()
     {
-
+        spawnManager = FindObjectOfType<SpawnManager>();
         Player player = FindObjectOfType<Player>();
         if (currentHealth <= 0)
         {
-            if (player != null)
+            if (player != null && spawnManager != null)
             {
                 if (isDead == false)
                 {
 
                     player.GainExp(20);
-                    killCount++;
+                    gameSystem.UpdateKillCount();
+                    spawnManager.UpdateCurrentEnemy();
                 }
 
             }
             rb.velocity = new Vector2(0, 0);
             isDead = true;
-            gameSystem.UpdateKillCount(killCount);
             StartCoroutine(DestroyAfterDelay(1f)); // Wait for 2 seconds before destroying
         }
 

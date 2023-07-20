@@ -6,21 +6,20 @@ using UnityEngine.Tilemaps;
 public class SpawnManager : MonoBehaviour
 {
     public GameObject enemyPrefab;
-    public Transform spawnPoint;
-    public float initialSpawnCount = 10f;
+    public float initialSpawnCount = 25f;
     public float spawnIncreaseRate = 2f;
     public Tilemap obstacleTilemap;
     public Player playerScript;
 
-    private float currentSpawnCount;
+    public float currentSpawnCount = 0;
     private Bounds tilemapBounds;
+
+
 
     public int newSpawnCount;
     private void Start()
     {
-        currentSpawnCount = initialSpawnCount;
         CalculateTilemapBounds();
-        SpawnEnemies();
     }
 
     private void CalculateTilemapBounds()
@@ -28,17 +27,10 @@ public class SpawnManager : MonoBehaviour
         tilemapBounds = obstacleTilemap.localBounds;
     }
 
-    private void SpawnEnemies()
-    {
-        for (int i = 0; i < currentSpawnCount; i++)
-        {
-            Vector3 spawnPosition = GetRandomSpawnPosition();
-            GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
-        }
-    }
-
+   
     private Vector3 GetRandomSpawnPosition()
     {
+
         Vector3 randomPosition = new Vector3(
             Random.Range(tilemapBounds.min.x, tilemapBounds.max.x),
             Random.Range(tilemapBounds.min.y, tilemapBounds.max.y),
@@ -78,15 +70,15 @@ public class SpawnManager : MonoBehaviour
 
         if (newSpawnCount > currentSpawnCount)
         {
-            int spawnDifference = newSpawnCount - Mathf.RoundToInt(currentSpawnCount);
-            for (int i = 0; i < spawnDifference; i++)
-            {
                 Vector3 spawnPosition = GetRandomSpawnPosition();
                 Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
-            }
+            currentSpawnCount++;
         }
+    }
 
-        currentSpawnCount = newSpawnCount;
+    public void UpdateCurrentEnemy()
+    {
+        currentSpawnCount--;
     }
 }
 

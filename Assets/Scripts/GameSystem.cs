@@ -19,9 +19,9 @@ public class GameSystem : MonoBehaviour
         UpdateGameTimeText();
     }
 
-    public void UpdateKillCount(int count)
+    public void UpdateKillCount()
     {
-        killCount = count;
+        killCount++;
     }
 
     private void UpdateKillCountText()
