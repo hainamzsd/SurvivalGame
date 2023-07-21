@@ -8,20 +8,20 @@ public class SpawnController : MonoBehaviour
 	public GameObject[] ItemPrefab;
 	void Start()
     {
-        
+        InvokeRepeating("SpawnObjectAtRandom", 5f, 15f);
     }
 
     // Update is called once per frame
     void Update()
     {
-		if (Input.GetKeyDown(KeyCode.Space)) SpawnObjectAtRandom();
+		//if (Input.GetKeyDown(KeyCode.Space)) SpawnObjectAtRandom();
 	}
 
 	void SpawnObjectAtRandom()
 	{
 		Vector3 spawnPosition = new Vector3(
-			Random.Range(-10 / 2f, 10 / 2f),
-			Random.Range(-10 / 2f, 10 / 2f),
+			Random.Range(-30 / 2f, 30 / 2f),
+			Random.Range(-30 / 2f, 30 / 2f),
 			transform.position.z
 		);
 
