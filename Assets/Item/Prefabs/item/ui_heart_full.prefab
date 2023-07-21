@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 29687818030950893}
   m_Layer: 0
   m_Name: ui_heart_full
-  m_TagString: Untagged
+  m_TagString: Health
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -169,4 +169,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e943dfac2e5c55b4a85bbaa70c5a84d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ItemPrefab: []

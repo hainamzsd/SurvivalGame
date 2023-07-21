@@ -154,7 +154,35 @@ public class Player : MonoBehaviour
        
     }
 
-   
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Health"))
+        {
+            if (health <= 100)
+            {
+                health += 20;
+                health = Mathf.Max(health, 0);
+                healthBar.SetHealth(health);
+                GeneralUI.createPopUp(transform.position, "+20", 2);
+            }
+            
+            Destroy(collision.gameObject);
+        }
+        else if (collision.gameObject.CompareTag("Shield"))
+        {
+            if (currentAmmo <= 10)
+            {
+
+                currentAmmo += 2;
+                currentAmmo = Mathf.Max(currentAmmo, 0);
+                ammoBar.SetAmmo(currentAmmo);
+                GeneralUI.createPopUp(transform.position, "+2", 2);
+            }
+            Destroy(collision.gameObject);
+        }
+    }
+
+
     //public void MeleeAttack()
     //{
     //    if (!isAttacking)
